@@ -1,0 +1,90 @@
+<!-- /home/kamusc/myproject/core/templates/core/home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Project Home</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #333; }
+        .item-card { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 6px; }
+        .meta { color: #888; font-size: 0.85rem; }
+        .form-container { background: #f9f9f9; border: 1px solid #eee; padding: 20px; border-radius: 6px; margin-bottom: 40px; }
+        .submit-btn { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
+        .submit-btn:hover { background: #0056b3; }
+
+        /* Flash message popup container styles */
+        .alert-box { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 15px; border-radius: 6px; margin-bottom: 25px; position: relative; display: flex; justify-content: space-between; align-items: center; }
+        .close-alert { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: #155724; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Django Flash Messages Section -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert-box" id="alert-message">
+                <span>{{ message }}</span>
+                <button class="close-alert" onclick="document.getElementById('alert-message').remove()">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <h1>Welcome to myproject</h1>
+    <hr>
+
+<div class="form-container">
+    <h2>Submit a New Item</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Renders structural errors or global validation issues -->
+        {% if form.errors %}
+            <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px; margin-bottom: 15px;">
+                <strong>Please fix the errors below:</strong>
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                {{ field.label_tag }}<br>
+                {{ field }}
+                <!-- Displays the unique validation warning right below the image field -->
+                {% if field.errors %}
+                    <span style="color: #dc3545; font-size: 0.85rem; display: block; margin-top: -10px; margin-bottom: 10px;">
+                        {{ field.errors.0 }}
+                    </span>
+                {% endif %}
+            </p>
+        {% endfor %}
+
+        <button type="submit" class="submit-btn">Submit Item</button>
+    </form>
+</div>
+
+
+
+    <hr>
+
+    <h2>Published Items</h2>
+    <!-- Item Display loop changes -->
+
+    <!-- /home/kamusc/myproject/core/templates/core/home.html -->
+    {% for item in items %}
+        <div class="item-card">
+            <h3>{{ item.title }}</h3>
+            <!-- Correct way to display images when using .values() -->
+            {% if item.image %}
+                <p>
+                    <img src="/media/{{ item.image }}" alt="{{ item.title }}" style="max-width: 100%; max-height: 300px; display: block; border-radius: 4px; margin-bottom: 15px;">
+                </p>
+            {% endif %}
+            <p>{{ item.description }}</p>
+        <div class="meta">Added on: {{ item.created_at|date:"F j, Y" }}</div>
+        </div>
+    {% endfor %}
+
+
+</body>
+</html>
